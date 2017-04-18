@@ -2,9 +2,11 @@ package com.chanaka.fluppy;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+
+import java.util.Random;
 
 public class Fluppy extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -19,9 +21,13 @@ public class Fluppy extends ApplicationAdapter {
 
 	int gameState;
 	float gravity =2;
-	float gap =200;
+	float gap =300;
+	float maxTubeOffSet;
+	Random randomGenerator;
+	float tubeOffset;
 
-	
+
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -32,8 +38,10 @@ public class Fluppy extends ApplicationAdapter {
 		birdY = Gdx.graphics.getHeight()/2 - birds[0].getHeight()/2;
 
 
-		topTube =new Texture("down1.png");
-		bottomTube = new Texture("up.png");
+		topTube =new Texture("up.png");
+		bottomTube = new Texture("down1.png");
+		maxTubeOffSet = Gdx.graphics.getHeight()/2- gap/2 - 100;
+		randomGenerator = new Random();
 
 
 	}
@@ -47,13 +55,15 @@ public class Fluppy extends ApplicationAdapter {
 
 		if(gameState != 0) {
 
-			batch.draw(topTube,Gdx.graphics.getWidth()/2 -topTube.getWidth()/2,Gdx.graphics.getHeight()/2 +gap/2);
-			batch.draw(bottomTube,Gdx.graphics.getWidth()/2 - bottomTube.getWidth()/2,Gdx.graphics.getHeight()/2 - gap/2 -bottomTube.getHeight());
-
-
 			if(Gdx.input.justTouched()){
 				velocity = -20;
+				tubeOffset =(randomGenerator.nextFloat() -0.5f)*(Gdx.graphics.getHeight() - gap - 200);
+
 			}
+
+			batch.draw(topTube,Gdx.graphics.getWidth()/2 -topTube.getWidth()/2,Gdx.graphics.getHeight()/2 +gap/2 +tubeOffset);
+			batch.draw(bottomTube,Gdx.graphics.getWidth()/2 - bottomTube.getWidth()/2,Gdx.graphics.getHeight()/2 - gap/2 -bottomTube.getHeight()+tubeOffset);
+
 			if(birdY > 0 || velocity <0) {
 				velocity = velocity + gravity;
 				birdY -= velocity;
