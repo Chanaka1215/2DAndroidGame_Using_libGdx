@@ -32,7 +32,7 @@ public class Fluppy extends ApplicationAdapter {
 		birdY = Gdx.graphics.getHeight()/2 - birds[0].getHeight()/2;
 
 
-		topTube =new Texture("down.png");
+		topTube =new Texture("down1.png");
 		bottomTube = new Texture("up.png");
 
 
