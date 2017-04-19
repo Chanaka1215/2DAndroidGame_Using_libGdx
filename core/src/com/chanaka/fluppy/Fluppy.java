@@ -2,6 +2,7 @@ package com.chanaka.fluppy;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -10,9 +11,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 
 import java.util.Random;
+
+
 
 public class Fluppy extends ApplicationAdapter {
 	SpriteBatch batch;
@@ -26,9 +30,10 @@ public class Fluppy extends ApplicationAdapter {
 	Rectangle[] bottomPipeCover;
 	ShapeRenderer shapeRenderer;
 	BitmapFont text;
+	Texture reset;
 
-	int flapState =0;
-	float birdY = 0;
+	int flapState  =0;
+	float birdY    =0;
 	float velocity =0;
 
 	int gameState;
@@ -57,14 +62,16 @@ public class Fluppy extends ApplicationAdapter {
 		birds[0] = new Texture("bird1.png");
 		birds[1] = new Texture("bird3.png");
 		gameOver = new Texture("gameOver.png");
+		reset =new Texture("reset.png") ;
+
 
 		birdCover =new Circle();
 		shapeRenderer = new ShapeRenderer();
 		bottomPipeCover = new Rectangle[numberOfTubes];
 		topPipeCover = new Rectangle[numberOfTubes];
 		text = new BitmapFont();
-		text.setColor(Color.WHITE);
-		text.getData().setScale(10);
+		text.setColor(Color.BLACK);
+		text.getData().setScale(5);
 
 
 
@@ -118,6 +125,7 @@ public class Fluppy extends ApplicationAdapter {
 
 			}
 
+
 			for(int i =0;i<numberOfTubes;i++) {
 				if(tubeX[i] < - topTube.getWidth()){
 					tubeX[i] += numberOfTubes * distanceBetweenTube;
@@ -148,15 +156,29 @@ public class Fluppy extends ApplicationAdapter {
 			}
 
 		} else if(gameState == 2){
+			Rectangle textureBounds=new Rectangle(Gdx.graphics.getWidth()/2 -reset.getWidth()/2,Gdx.graphics.getHeight()/2 +140,reset.getWidth(),reset.getHeight());
+
 
 			batch.draw(gameOver,Gdx.graphics.getWidth()/2 - gameOver.getWidth()/2,Gdx.graphics.getHeight()/2 -gameOver.getHeight()/2);
-			if(Gdx.input.justTouched()){
-				gameState =1;
-				beginGame();
-				scoringTobe =0;
-				score=0;
-				velocity =0;
+			batch.draw(reset,Gdx.graphics.getWidth()/2 -reset.getWidth()/2,Gdx.graphics.getHeight()/2 -200);
+			if(Gdx.input.isTouched()){
+				Vector2 temp = new Vector2(Gdx.input.getX(), Gdx.input.getY());
+				Gdx.app.log("hhhhh","hhhhh");
 
+
+				    Gdx.app.log("hhhhh","44444");
+					if(textureBounds.contains(temp.x,temp.y)){
+						Gdx.app.log("done","Touched");
+						gameState =1;
+						beginGame();
+						scoringTobe =0;
+						score=0;
+						velocity =0;
+
+					}else {
+
+						Gdx.app.log("aaa",String.valueOf(temp.x+" "+temp.y));
+					}
 			}
 		}
 
@@ -171,7 +193,7 @@ public class Fluppy extends ApplicationAdapter {
 
 		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
 
-		text.draw(batch,String.valueOf(score),100,200);
+		text.draw(batch,String.valueOf(score),50,100);
 
 		birdCover.set(Gdx.graphics.getWidth() /2 ,birdY +birds[flapState].getHeight()/2,birds[flapState].getWidth() /2);
 
@@ -185,7 +207,7 @@ public class Fluppy extends ApplicationAdapter {
 				gameState =2;
 			}
 		}
-		//shapeRenderer.end();
+
 		batch.end();
 
 	}
