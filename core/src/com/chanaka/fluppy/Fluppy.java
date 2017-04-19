@@ -20,6 +20,7 @@ public class Fluppy extends ApplicationAdapter {
 	Texture[] birds;
 	Texture topTube;
 	Texture bottomTube;
+	Texture gameOver;
 	Circle birdCover;
 	Rectangle[] topPipeCover;
 	Rectangle[] bottomPipeCover;
@@ -55,7 +56,8 @@ public class Fluppy extends ApplicationAdapter {
 		birds =new Texture[2];
 		birds[0] = new Texture("bird1.png");
 		birds[1] = new Texture("bird3.png");
-		birdY = Gdx.graphics.getHeight()/2 - birds[0].getHeight()/2;
+		gameOver = new Texture("gameOver.png");
+
 		birdCover =new Circle();
 		shapeRenderer = new ShapeRenderer();
 		bottomPipeCover = new Rectangle[numberOfTubes];
@@ -71,17 +73,23 @@ public class Fluppy extends ApplicationAdapter {
 		maxTubeOffSet = Gdx.graphics.getHeight()/2- gap/2 - 100;
 		randomGenerator = new Random();
 		distanceBetweenTube =Gdx.graphics.getWidth();
+
+		beginGame();
+
+	}
+
+
+	public  void beginGame(){
+
+
+		birdY = Gdx.graphics.getHeight()/2 - birds[0].getHeight()/2;
 		for(int i =0;i<numberOfTubes;i++){
 
 			tubeOffset[i] =(randomGenerator.nextFloat() -0.5f)*(Gdx.graphics.getHeight() - gap - 200);
 			tubeX[i] = Gdx.graphics.getWidth()/2 -topTube.getWidth()/2 +Gdx.graphics.getWidth()+i * distanceBetweenTube;
-			 topPipeCover[i] = new Rectangle();
-			 bottomPipeCover[i] = new Rectangle();
+			topPipeCover[i] = new Rectangle();
+			bottomPipeCover[i] = new Rectangle();
 		}
-
-
-
-
 	}
 
 	@Override
@@ -91,7 +99,7 @@ public class Fluppy extends ApplicationAdapter {
 		batch.draw(bg, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
-		if(gameState != 0) {
+		if(gameState == 1) {
 
 			if (tubeX[scoringTobe] < Gdx.graphics.getWidth()){
 				score ++;
@@ -128,15 +136,28 @@ public class Fluppy extends ApplicationAdapter {
 				bottomPipeCover[i] = new Rectangle(tubeX[i],Gdx.graphics.getHeight() / 2 - gap / 2 - bottomTube.getHeight() + tubeOffset[i],bottomTube.getWidth(),bottomTube.getHeight());
 			}
 
-			if(birdY > 0 || velocity <0) {
+			if(birdY > 0) {
 				velocity = velocity + gravity;
 				birdY -= velocity;
+			}else {
+				gameState = 2;
 			}
-		}else {
+		}else if(gameState ==0){
 			if(Gdx.input.justTouched()){
 				gameState =1;
 			}
 
+		} else if(gameState == 2){
+
+			batch.draw(gameOver,Gdx.graphics.getWidth()/2 - gameOver.getWidth()/2,Gdx.graphics.getHeight()/2 -gameOver.getHeight()/2);
+			if(Gdx.input.justTouched()){
+				gameState =1;
+				beginGame();
+				scoringTobe =0;
+				score=0;
+				velocity =0;
+
+			}
 		}
 
 		if (flapState == 0) {
@@ -161,7 +182,7 @@ public class Fluppy extends ApplicationAdapter {
 			//shapeRenderer.rect(tubeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + tubeOffset[i],topTube.getWidth(),topTube.getHeight());
 			//shapeRenderer.rect(tubeX[i],Gdx.graphics.getHeight() / 2 - gap / 2 - bottomTube.getHeight() + tubeOffset[i],bottomTube.getWidth(),bottomTube.getHeight());
 			if(Intersector.overlaps(birdCover,topPipeCover[i]) || Intersector.overlaps(birdCover,bottomPipeCover[i])){
-				Gdx.app.log("Collision","Yes");
+				gameState =2;
 			}
 		}
 		//shapeRenderer.end();
